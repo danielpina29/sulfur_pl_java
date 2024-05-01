@@ -1,0 +1,67 @@
+options {
+  STATIC=false;
+}
+
+PARSER_BEGIN(SulfurParser)
+
+package parser;
+
+public class SulfurParser {
+
+}
+
+PARSER_END(SulfurParser)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\r"
+}
+
+TOKEN :
+{
+  < Num: (["0"-"9"]) + >
+  |
+  < PLUS : "+" >
+  |
+  < MINUS : "-">
+  |
+  < TIMES : "*">
+  |
+  < DIV : "/">
+  |
+  < LPAR : "(" >
+  |
+  < RPAR : ")" >
+  |
+  < EOL : "\n" >
+  |
+  < Id: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9"] )* >
+}
+
+void Start():
+{ }
+{
+   Exp() <EOL>
+}
+
+void Exp() :
+{ }
+{
+   Term() ( <PLUS> Term() )*
+}
+
+void Term() :
+{ }
+{
+    Fact() ( <TIMES> Fact() )*
+}
+
+void Fact() :
+{ }
+{
+ 	<Num>
+ |
+   <LPAR> Exp() <RPAR>
+}

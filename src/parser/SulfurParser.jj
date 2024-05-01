@@ -35,6 +35,24 @@ TOKEN :
   |
   < RPAR : ")" >
   |
+  < AND : "&&" >
+  |
+  < OR : "||" >
+  |
+  < NOT : "!" >
+  |
+  < EQUALS : "==" >
+  |
+  < NOT_EQUALS : "!=" >
+  |
+  < GREATER : ">" >
+  |
+  < LESS : "<" >
+  |
+  < TRUE : "true" >
+  |
+  < FALSE : "false" >
+  |
   < EOL : "\n" >
   |
   < Id: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9"] )* >
@@ -43,9 +61,30 @@ TOKEN :
 Exp Start():
 { Exp e; }
 {
-   e = Expr() <EOL> { return e; }
+   e = BExpr() <EOL> { return e; }
 }
 
+Exp BExpr():
+{ Exp e1, e2; }
+{
+   e1 = Cmp()
+   ( <AND> e2 = Cmp() {return new ASTAnd(e1,e2);}
+   | <OR> e2 = Cmp() {return new ASTOr(e1, e2); }
+   )*
+   { return e1; }
+}
+
+Exp Cmp() :
+{ Exp e1, e2;}
+{
+    e1 = Expr()
+    ( <GREATER> e2 = Expr() { return new ASTGreater(e1,e2); }
+    | <LESS> e2 = Expr() { return new ASTLess(e1, e2); }
+    | <EQUALS> e2 = Expr() { return new ASTEquals(e1, e2); }
+    | <NOT_EQUALS> e2 = Expr() { return new ASTNot(new ASTEquals(e1, e2)); }
+    )*
+    { return e1; }
+}
 Exp Expr() :
 { Exp e1, e2; }
 {
@@ -70,6 +109,9 @@ Exp Fact() :
 { Token x; Exp e; }
 {
     x = <Num> { return new ASTNum(Integer.parseInt(x.image)); }
- |
-   <LPAR> e = Expr() <RPAR> { return e; }
+    | <LPAR> e = BExpr() <RPAR> { return e; }
+    | <MINUS> e = Fact() { return new ASTMinus(new ASTNum(0), e); }
+    | <TRUE> Fact() { return new ASTBool(true); }
+    | <FALSE> Fact() { return new ASTBool(true); }
+    | <NOT> e = BExpr() { return new ASTNot(e); }
 }

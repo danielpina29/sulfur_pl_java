@@ -25,9 +25,27 @@ public interface SulfurParserConstants {
   /** RegularExpression Id. */
   int RPAR = 10;
   /** RegularExpression Id. */
-  int EOL = 11;
+  int AND = 11;
   /** RegularExpression Id. */
-  int Id = 12;
+  int OR = 12;
+  /** RegularExpression Id. */
+  int NOT = 13;
+  /** RegularExpression Id. */
+  int EQUALS = 14;
+  /** RegularExpression Id. */
+  int NOT_EQUALS = 15;
+  /** RegularExpression Id. */
+  int GREATER = 16;
+  /** RegularExpression Id. */
+  int LESS = 17;
+  /** RegularExpression Id. */
+  int TRUE = 18;
+  /** RegularExpression Id. */
+  int FALSE = 19;
+  /** RegularExpression Id. */
+  int EOL = 20;
+  /** RegularExpression Id. */
+  int Id = 21;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -45,6 +63,15 @@ public interface SulfurParserConstants {
     "\"/\"",
     "\"(\"",
     "\")\"",
+    "\"&&\"",
+    "\"||\"",
+    "\"!\"",
+    "\"==\"",
+    "\"!=\"",
+    "\">\"",
+    "\"<\"",
+    "\"true\"",
+    "\"false\"",
     "\"\\n\"",
     "<Id>",
   };

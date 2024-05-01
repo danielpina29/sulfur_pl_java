@@ -12,6 +12,6 @@ public class ASTMult implements Exp {
 
     @Override
     public <T, E> T accept(Visitor<T, E> v, E block) {
-        return v.visit(this);
+        return v.visit(this, block);
     }
 }

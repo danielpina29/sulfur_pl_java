@@ -5,15 +5,103 @@ package parser;
 import ast.*;public class SulfurParser implements SulfurParserConstants {
 
   final public Exp Start() throws ParseException {Exp e;
-    e = Expr();
+    e = BExpr();
     jj_consume_token(EOL);
 {if ("" != null) return e;}
     throw new Error("Missing return statement in function");
 }
 
+  final public Exp BExpr() throws ParseException {Exp e1, e2;
+    e1 = Cmp();
+    label_1:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case AND:
+      case OR:{
+        ;
+        break;
+        }
+      default:
+        jj_la1[0] = jj_gen;
+        break label_1;
+      }
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case AND:{
+        jj_consume_token(AND);
+        e2 = Cmp();
+{if ("" != null) return new ASTAnd(e1,e2);}
+        break;
+        }
+      case OR:{
+        jj_consume_token(OR);
+        e2 = Cmp();
+{if ("" != null) return new ASTOr(e1, e2);}
+        break;
+        }
+      default:
+        jj_la1[1] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+    }
+{if ("" != null) return e1;}
+    throw new Error("Missing return statement in function");
+}
+
+  final public Exp Cmp() throws ParseException {Exp e1, e2;
+    e1 = Expr();
+    label_2:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case EQUALS:
+      case NOT_EQUALS:
+      case GREATER:
+      case LESS:{
+        ;
+        break;
+        }
+      default:
+        jj_la1[2] = jj_gen;
+        break label_2;
+      }
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case GREATER:{
+        jj_consume_token(GREATER);
+        e2 = Expr();
+{if ("" != null) return new ASTGreater(e1,e2);}
+        break;
+        }
+      case LESS:{
+        jj_consume_token(LESS);
+        e2 = Expr();
+{if ("" != null) return new ASTLess(e1, e2);}
+        break;
+        }
+      case EQUALS:{
+        jj_consume_token(EQUALS);
+        e2 = Expr();
+{if ("" != null) return new ASTEquals(e1, e2);}
+        break;
+        }
+      case NOT_EQUALS:{
+        jj_consume_token(NOT_EQUALS);
+        e2 = Expr();
+{if ("" != null) return new ASTNot(new ASTEquals(e1, e2));}
+        break;
+        }
+      default:
+        jj_la1[3] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+    }
+{if ("" != null) return e1;}
+    throw new Error("Missing return statement in function");
+}
+
   final public Exp Expr() throws ParseException {Exp e1, e2;
     e1 = Term();
-    label_1:
+    label_3:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case PLUS:
@@ -22,8 +110,8 @@ import ast.*;public class SulfurParser implements SulfurParserConstants {
         break;
         }
       default:
-        jj_la1[0] = jj_gen;
-        break label_1;
+        jj_la1[4] = jj_gen;
+        break label_3;
       }
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case PLUS:{
@@ -39,7 +127,7 @@ import ast.*;public class SulfurParser implements SulfurParserConstants {
         break;
         }
       default:
-        jj_la1[1] = jj_gen;
+        jj_la1[5] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -50,7 +138,7 @@ import ast.*;public class SulfurParser implements SulfurParserConstants {
 
   final public Exp Term() throws ParseException {Exp e1, e2;
     e1 = Fact();
-    label_2:
+    label_4:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case TIMES:
@@ -59,8 +147,8 @@ import ast.*;public class SulfurParser implements SulfurParserConstants {
         break;
         }
       default:
-        jj_la1[2] = jj_gen;
-        break label_2;
+        jj_la1[6] = jj_gen;
+        break label_4;
       }
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case TIMES:{
@@ -76,7 +164,7 @@ import ast.*;public class SulfurParser implements SulfurParserConstants {
         break;
         }
       default:
-        jj_la1[3] = jj_gen;
+        jj_la1[7] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -94,13 +182,37 @@ import ast.*;public class SulfurParser implements SulfurParserConstants {
       }
     case LPAR:{
       jj_consume_token(LPAR);
-      e = Expr();
+      e = BExpr();
       jj_consume_token(RPAR);
 {if ("" != null) return e;}
       break;
       }
+    case MINUS:{
+      jj_consume_token(MINUS);
+      e = Fact();
+{if ("" != null) return new ASTMinus(new ASTNum(0), e);}
+      break;
+      }
+    case TRUE:{
+      jj_consume_token(TRUE);
+      Fact();
+{if ("" != null) return new ASTBool(true);}
+      break;
+      }
+    case FALSE:{
+      jj_consume_token(FALSE);
+      Fact();
+{if ("" != null) return new ASTBool(true);}
+      break;
+      }
+    case NOT:{
+      jj_consume_token(NOT);
+      e = BExpr();
+{if ("" != null) return new ASTNot(e);}
+      break;
+      }
     default:
-      jj_la1[4] = jj_gen;
+      jj_la1[8] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -116,13 +228,13 @@ import ast.*;public class SulfurParser implements SulfurParserConstants {
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[5];
+  final private int[] jj_la1 = new int[9];
   static private int[] jj_la1_0;
   static {
 	   jj_la1_init_0();
 	}
 	private static void jj_la1_init_0() {
-	   jj_la1_0 = new int[] {0x60,0x60,0x180,0x180,0x210,};
+	   jj_la1_0 = new int[] {0x1800,0x1800,0x3c000,0x3c000,0x60,0x60,0x180,0x180,0xc2250,};
 	}
 
   /** Constructor with InputStream. */
@@ -136,7 +248,7 @@ import ast.*;public class SulfurParser implements SulfurParserConstants {
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 5; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 9; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -150,7 +262,7 @@ import ast.*;public class SulfurParser implements SulfurParserConstants {
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 5; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 9; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -160,7 +272,7 @@ import ast.*;public class SulfurParser implements SulfurParserConstants {
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 5; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 9; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -178,7 +290,7 @@ import ast.*;public class SulfurParser implements SulfurParserConstants {
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 5; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 9; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -187,7 +299,7 @@ import ast.*;public class SulfurParser implements SulfurParserConstants {
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 5; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 9; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -196,7 +308,7 @@ import ast.*;public class SulfurParser implements SulfurParserConstants {
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 5; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 9; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -247,12 +359,12 @@ import ast.*;public class SulfurParser implements SulfurParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
 	 jj_expentries.clear();
-	 boolean[] la1tokens = new boolean[13];
+	 boolean[] la1tokens = new boolean[22];
 	 if (jj_kind >= 0) {
 	   la1tokens[jj_kind] = true;
 	   jj_kind = -1;
 	 }
-	 for (int i = 0; i < 5; i++) {
+	 for (int i = 0; i < 9; i++) {
 	   if (jj_la1[i] == jj_gen) {
 		 for (int j = 0; j < 32; j++) {
 		   if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -261,7 +373,7 @@ import ast.*;public class SulfurParser implements SulfurParserConstants {
 		 }
 	   }
 	 }
-	 for (int i = 0; i < 13; i++) {
+	 for (int i = 0; i < 22; i++) {
 	   if (la1tokens[i]) {
 		 jj_expentry = new int[1];
 		 jj_expentry[0] = i;

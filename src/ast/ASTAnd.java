@@ -1,11 +1,10 @@
 package ast;
 
-public class ASTMinus implements Exp {
-
+public class ASTAnd implements Exp {
     public Exp left;
     public Exp right;
 
-    public ASTMinus(Exp left, Exp right) {
+    public ASTAnd(Exp left, Exp right) {
         this.left = left;
         this.right = right;
     }

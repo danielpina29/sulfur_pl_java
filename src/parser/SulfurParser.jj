@@ -6,7 +6,7 @@ PARSER_BEGIN(SulfurParser)
 
 package parser;
 
-public class SulfurParser {
+import ast.*;public class SulfurParser {
 
 }
 
@@ -40,28 +40,36 @@ TOKEN :
   < Id: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9"] )* >
 }
 
-void Start():
-{ }
+Exp Start():
+{ Exp e; }
 {
-   Exp() <EOL>
+   e = Expr() <EOL> { return e; }
 }
 
-void Exp() :
-{ }
+Exp Expr() :
+{ Exp e1, e2; }
 {
-   Term() ( <PLUS> Term() )*
+   e1 = Term()
+   ( <PLUS> e2 = Term() { return new ASTAdd(e1, e2); }
+   | <MINUS> e2 = Term() { return new ASTMinus(e1, e2); }
+   )*
+   { return e1; }
 }
 
-void Term() :
-{ }
+Exp Term() :
+{ Exp e1, e2; }
 {
-    Fact() ( <TIMES> Fact() )*
+    e1 = Fact()
+    ( <TIMES> e2 = Fact() { return new ASTMult(e1, e2); }
+    | <DIV> e2 = Fact() { return new ASTDiv(e1, e2); }
+    )*
+    { return e1; }
 }
 
-void Fact() :
-{ }
+Exp Fact() :
+{ Token x; Exp e; }
 {
- 	<Num>
+    x = <Num> { return new ASTNum(Integer.parseInt(x.image)); }
  |
-   <LPAR> Exp() <RPAR>
+   <LPAR> e = Expr() <RPAR> { return e; }
 }

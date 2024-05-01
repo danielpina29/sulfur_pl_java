@@ -2,9 +2,12 @@ package main;
 
 import java.io.ByteArrayInputStream;
 
+import ast.Exp;
+import interpreter.Interpreter;
 import parser.ParseException;
 import parser.SulfurParser;
 import parser.TokenMgrError;
+import values.Value;
 
 public class Console {
 
@@ -14,8 +17,11 @@ public class Console {
 
         while (true) {
             try {
-                parser.Start();
-                System.out.println("OK!" );
+                Exp exp = parser.Start();
+                System.out.println("Parsed Successfully" );
+                Value value = Interpreter.interpret(exp);
+                System.out.println("Interpret Successfully" );
+                System.out.println("Interpreter Output: " + value.toString() );
             } catch (TokenMgrError e) {
                 System.out.println("Lexical Error!");
                 e.printStackTrace();
